@@ -12,3 +12,5 @@ Solution walkthrough:
 9. For the out of reach region, The trajectory is streamlined i.e 2-3 cubic splines are generated for and place, It is made sure that the spline lies above the ground surface, So individual trajectory is plannned from eachc checkpoint, This avoids spline to be generated in a wierd manner.
 10. For the objects in a box region, Segmentation along with PCA is carried out for pick and place.
 11. The sorting for each objects picked up is done using classIndex detected from the perception model.
+
+The link for all the files and video : https://drive.google.com/drive/folders/1K72kiB2UANAzJ-EH_QYFgYtcLRqNQV9N
