@@ -10,7 +10,6 @@ Solution walkthrough:
 7. The pick and place for orientation change region is done by obtaining position and orientaion of the object by means of Principal Component Analysis (PCA), The idea is to obtain point cloud data from the bounding box detected by menas of Yolov4, Then obtain the centre data and apply PCA there to find the direction in which the object is lying in terms of its variance.
 8. The pick and place for Object change region follows the same logic as well.
 9. For the out of reach region, The trajectory is streamlined i.e 2-3 cubic splines are generated for and place, It is made sure that the spline lies above the ground surface, So individual trajectory is plannned from eachc checkpoint, This avoids spline to be generated in a wierd manner.
-10. For the objects in a box region, Segmentation along with PCA is carried out for pick and place.
-11. The sorting for each objects picked up is done using classIndex detected from the perception model.
+10. The sorting for each objects picked up is done using classIndex detected from the perception model.
 
 The link for all the files and video : https://drive.google.com/drive/folders/1K72kiB2UANAzJ-EH_QYFgYtcLRqNQV9N
