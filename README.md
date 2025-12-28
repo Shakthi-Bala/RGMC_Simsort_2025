@@ -1,15 +1,157 @@
-# RGMC_Simsort_2025
+# Vision-Based Pick and Place with Multi-Region Planning 🤖📦
 
-Solution walkthrough:
-1. The environment to plan pick and place is huge, So instead of making camera look various position and stiching image together, The idealogy is to get different lookup position and plan trajectory accordingly.
-2. There are in total of 7 lookup positions.
-3. There are 5 different regions, Firstly Static region, Next comes Orientation change region, Followed by objects placed in a box, Followed by Object change region, Lastly Out of reach region.
-4. The perception model trained is Yolov4 on a custom dataset with confidence threshold of 85% and enviroment used is matlab.
-5. The plan for pick and place is to obtain PointStamped data by means of Deprojection from the camera subsystem and Use inverse Kinematics for pick and place. The catch here is also the object needs to be sorted based on its type.
-6. The pick and place for static region can be hardcoded, With fixed orientation for each object and place position i.e sorting done based on classIndex from the camera subsystem.
-7. The pick and place for orientation change region is done by obtaining position and orientaion of the object by means of Principal Component Analysis (PCA), The idea is to obtain point cloud data from the bounding box detected by menas of Yolov4, Then obtain the centre data and apply PCA there to find the direction in which the object is lying in terms of its variance.
-8. The pick and place for Object change region follows the same logic as well.
-9. For the out of reach region, The trajectory is streamlined i.e 2-3 cubic splines are generated for and place, It is made sure that the spline lies above the ground surface, So individual trajectory is plannned from eachc checkpoint, This avoids spline to be generated in a wierd manner.
-10. The sorting for each objects picked up is done using classIndex detected from the perception model.
+This project implements a **vision-based pick-and-place system** for a large workspace, focusing on **efficient perception, region-aware planning, and object sorting**.  
+The system is designed to handle **multiple object configurations and reachability constraints** using a combination of **deep learning, point cloud processing, and trajectory planning**.
 
-The link for all the files and video : https://drive.google.com/drive/folders/1K72kiB2UANAzJ-EH_QYFgYtcLRqNQV9N
+---
+
+## 📌 Problem Overview
+
+The pick-and-place environment is **large and complex**, making it impractical to rely on a single camera view or full-scene image stitching.
+
+### Key Challenge
+- Large workspace
+- Objects located in multiple regions with different constraints
+- Orientation variability
+- Reachability limitations
+
+### Core Idea
+Instead of continuously moving the camera, the system uses **predefined lookup positions** and **region-specific planning strategies**.
+
+---
+
+## 👁️ Perception Strategy
+
+- **Total Lookup Positions:** 7  
+- Each lookup position captures a subset of the workspace
+- Object detection is performed independently at each position
+
+### Perception Model
+- **Model:** YOLOv4  
+- **Training:** Custom dataset  
+- **Confidence Threshold:** 85%  
+- **Environment:** MATLAB  
+
+The perception subsystem outputs:
+- Bounding boxes
+- Class indices (`classIndex`)
+- Detection confidence
+
+---
+
+## 🗺️ Workspace Decomposition
+
+The workspace is divided into **five distinct regions**, each with its own planning logic:
+
+1. **Static Region**
+2. **Orientation Change Region**
+3. **Box Region (Objects inside container)**
+4. **Object Change Region**
+5. **Out-of-Reach Region**
+
+---
+
+## 🧠 Planning & Control Pipeline
+
+### 1️⃣ Position Estimation
+- Bounding box coordinates from YOLOv4
+- Pixel coordinates are **deprojected** to obtain `PointStamped` data
+- Camera subsystem provides 3D object location
+
+---
+
+### 2️⃣ Pick and Place Strategy (Region-wise)
+
+#### 🔹 Static Region
+- Fixed object orientations
+- Hardcoded pick and place poses
+- Sorting based purely on `classIndex`
+
+---
+
+#### 🔹 Orientation Change Region
+- Object orientation estimated using **Principal Component Analysis (PCA)**
+- Pipeline:
+  1. Extract point cloud from YOLO bounding box
+  2. Compute centroid
+  3. Apply PCA to determine dominant object direction
+  4. Align gripper accordingly
+
+---
+
+#### 🔹 Box Region
+- Same logic as orientation change region
+- PCA-based orientation estimation
+- Robust to cluttered object placement
+
+---
+
+#### 🔹 Object Change Region
+- Dynamic object configurations
+- Same PCA + IK-based planning approach
+
+---
+
+#### 🔹 Out-of-Reach Region
+- Direct straight-line motion is not feasible
+- Solution:
+  - Generate **2–3 cubic spline trajectories**
+  - Introduce intermediate checkpoints
+  - Ensure splines remain **above ground surface**
+  - Plan trajectory segment-by-segment
+
+This avoids unstable or physically invalid spline generation.
+
+---
+
+## 🦾 Motion Planning
+
+- **Inverse Kinematics (IK)** used for all pick and place motions
+- Trajectories generated based on:
+  - Region constraints
+  - Object orientation
+  - Reachability
+
+---
+
+## 🗂️ Object Sorting Logic
+
+- Sorting is based on the **detected object class (`classIndex`)**
+- Each class maps to a predefined placement location
+- Consistent sorting across all regions
+
+---
+
+## 🧪 Key Techniques Used
+
+- YOLOv4 (custom-trained)
+- Point cloud processing
+- PCA for orientation estimation
+- Inverse Kinematics
+- Cubic spline trajectory generation
+- Region-aware planning
+
+---
+
+## 🎥 Demo & Files
+
+All related files, scripts, and demonstration videos can be found here:
+
+🔗 **Google Drive:**  
+https://drive.google.com/drive/folders/1K72kiB2UANAzJ-EH_QYFgYtcLRqNQV9N
+
+---
+
+## ⚠️ Notes & Limitations
+
+- Performance depends on detection accuracy
+- PCA assumes sufficient point cloud density
+- Hardcoded poses are region-specific
+- Requires careful calibration between camera and robot
+
+---
+
+## 👤 Author
+
+**Shakthi Bala**  
+Robotic Manipulation | Vision-Based Planning | Motion Planning | Perception Systems
